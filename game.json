@@ -14,7 +14,7 @@
 		"sandbox-runtime": "3",
 		"nicolive": {
 			"supportedModes": [
-				"multi"
+				"multi_admission"
 			]
 		},
 		"external": {

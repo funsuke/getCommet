@@ -54,6 +54,15 @@ function main(param: g.GameMainParameterObject): void {
 	// 読込時処理
 	// -------------------------------------------------------------
 	scene.onLoad.add(() => {
+		new g.FilledRect({
+			scene: scene,
+			cssColor: "white",
+			x: 0,
+			y: 0,
+			width: g.game.width,
+			height: g.game.height,
+			parent: scene,
+		});
 		const label = new g.Label({
 			scene: scene,
 			text: "マルチゲームのテスト",
@@ -69,7 +78,12 @@ function main(param: g.GameMainParameterObject): void {
 		});
 		scene.append(label);
 		// コメントの受信を開始
-		g.game.external.namagameComment?.start();
+		console.log("コメントの受信を開始します");
+		try {
+			g.game.external.namagameComment?.start();
+		} catch (e) {
+			console.error("コメントの受信に失敗しました: ", e);
+		}
 	});
 	g.game.pushScene(scene);
 }
