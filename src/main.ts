@@ -8,6 +8,8 @@
 // マルチのテストは
 // akashic serve -s nicolive
 
+// ニコニコっぽくコメントが流れるように改造
+
 function main(param: g.GameMainParameterObject): void {
 	const scene = new g.Scene({ game: g.game });
 	// -------------------------------------------------------------
@@ -24,7 +26,7 @@ function main(param: g.GameMainParameterObject): void {
 		});
 		scene.append(rect);
 	});
-	let cntRow = 0;
+	// let cntRow = 0;
 	// -------------------------------------------------------------
 	// コメントの受信を行うためのイベントリスナーを追加
 	// -------------------------------------------------------------
@@ -34,20 +36,37 @@ function main(param: g.GameMainParameterObject): void {
 			for (const c of comments) {
 				const label = new g.Label({
 					scene: scene,
-					text: c.isAnonymous ? " (匿名)" : "" + c.comment,
+					text: c.comment.trim(), // コメントの内容
+					// c.isAnonymous ? "(匿名)" + c.comment
+					// 	: c.userID === undefined ? "(生主)" + c.comment
+					// 		: "(" + c.name + ")" + c.comment,
 					font: new g.DynamicFont({
 						game: g.game,
-						fontFamily: "sans-serif",
-						size: 16
+						fontFamily: "monospace",
+						// fontWeight: "bold",
+						fontColor: "#ffffff",
+						strokeColor: "#000000",
+						strokeWidth: 6,
+						size: 64
 					}),
-					x: 10,
-					y: 50 + 20 * cntRow + 20 * comments.indexOf(c),
+					x: 1280,
+					y: 700 * g.game.random.generate(),
 					width: 300,
 					height: 20
 				});
+				label.onUpdate.add(() => {
+					// ラベルの位置を更新
+					label.x -= 8 * (label.text.length < 4 ? 1 : (label.text.length - 4) / 8 + 1);
+					label.modified();
+					// 画面外に出たら削除
+					if (label.x + label.width < 0) {
+						scene.remove(label);
+						label.destroy();
+					}
+				});
 				scene.append(label);
 			}
-			cntRow += comments.length;
+			// cntRow += comments.length;
 		}
 	});
 	// -------------------------------------------------------------
@@ -69,7 +88,7 @@ function main(param: g.GameMainParameterObject): void {
 			font: new g.DynamicFont({
 				game: g.game,
 				fontFamily: "sans-serif",
-				size: 24
+				size: 32
 			}),
 			x: 10,
 			y: 10,
@@ -80,7 +99,9 @@ function main(param: g.GameMainParameterObject): void {
 		// コメントの受信を開始
 		console.log("コメントの受信を開始します");
 		try {
-			g.game.external.namagameComment?.start();
+			g.game.external.namagameComment?.start(undefined, () => {
+				return;
+			});
 		} catch (e) {
 			console.error("コメントの受信に失敗しました: ", e);
 		}
